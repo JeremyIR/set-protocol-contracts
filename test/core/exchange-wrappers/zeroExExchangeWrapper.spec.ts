@@ -18,7 +18,6 @@ import { CoreWrapper } from '../../../utils/coreWrapper';
 import { ERC20Wrapper } from '../../../utils/erc20Wrapper';
 import { ExchangeWrapper } from '../../../utils/exchangeWrapper';
 import {
-  NULL_ADDRESS,
   UNLIMITED_ALLOWANCE_IN_BASE_UNITS,
   ZERO
 } from '../../../utils/constants';
@@ -105,15 +104,15 @@ contract('ZeroExExchangeWrapper', accounts => {
       subjectTakerAccount = issuanceOrderAndZeroExOrderTakerAccount;
       subjectOrderCount = new BigNumber(1);
 
-      senderAddress = senderAddress || NULL_ADDRESS;
+      senderAddress = senderAddress || Utils.CONSTANTS.NULL_ADDRESS;
       makerAddress = makerAddress || zeroExOrderMakerAccount;
-      takerAddress = takerAddress || NULL_ADDRESS;
+      takerAddress = takerAddress || Utils.CONSTANTS.NULL_ADDRESS;
       makerFee = makerFee || ZERO;
       takerFee = takerFee || ZERO;
       makerAssetAmount = makerAssetAmount || ether(100);
       takerAssetAmount = takerAssetAmount || ether(10);
       salt = salt || Utils.generateSalt();
-      feeRecipientAddress = feeRecipientAddress || NULL_ADDRESS;
+      feeRecipientAddress = feeRecipientAddress || Utils.CONSTANTS.NULL_ADDRESS;
       expirationTimeSeconds = expirationTimeSeconds || Utils.generateTimestamp(10);
 
       zeroExOrder = Utils.generateZeroExOrder(
@@ -246,9 +245,9 @@ contract('ZeroExExchangeWrapper', accounts => {
         secondZeroExOrderMakerAssetAmount = ether(100);
         secondZeroExOrderTakerAssetAmount = ether(20);
         secondZeroExOrder = Utils.generateZeroExOrder(
-          NULL_ADDRESS,
+          Utils.CONSTANTS.NULL_ADDRESS,
           secondZeroExOrderMakerAccount,
-          NULL_ADDRESS,
+          Utils.CONSTANTS.NULL_ADDRESS,
           ZERO,
           ZERO,
           secondZeroExOrderMakerAssetAmount,
@@ -257,7 +256,7 @@ contract('ZeroExExchangeWrapper', accounts => {
           zeroExOrderTakerToken.address,
           Utils.generateSalt(),
           TestUtils.ZERO_EX_EXCHANGE_ADDRESS,
-          NULL_ADDRESS,
+          Utils.CONSTANTS.NULL_ADDRESS,
           Utils.generateTimestamp(10),
         );
 

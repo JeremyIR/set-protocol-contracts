@@ -2,23 +2,25 @@ import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
 import { BigNumber } from 'bignumber.js';
-import { Address } from 'set-protocol-utils';
+import { SetProtocolUtils, Address } from 'set-protocol-utils';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
 import { StandardTokenMockContract, SetTokenFactoryContract, SetTokenContract } from '../../utils/contracts';
 import { ether } from '../../utils/units';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../utils/logs';
 import { assertTokenBalance, expectRevertError } from '../../utils/tokenAssertions';
-import { NULL_ADDRESS, STANDARD_COMPONENT_UNIT, STANDARD_NATURAL_UNIT, ZERO } from '../../utils/constants';
+import { STANDARD_COMPONENT_UNIT, STANDARD_NATURAL_UNIT, ZERO } from '../../utils/constants';
 import { getExpectedTransferLog } from '../../utils/contract_logs/setToken';
 import { CoreWrapper } from '../../utils/coreWrapper';
 import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const SetToken = artifacts.require('SetToken');
+const testUtils = new TestUtils(web3);
+const { expect } = chai;
+
 
 contract('SetToken', accounts => {
   const [
@@ -159,7 +161,7 @@ contract('SetToken', accounts => {
         subjectComponentUnits.push(ZERO);
 
         // Length components must match componentUnits
-        subjectComponentAddresses.push(NULL_ADDRESS);
+        subjectComponentAddresses.push(SetProtocolUtils.CONSTANTS.NULL_ADDRESS);
       });
 
       it('should revert', async () => {
@@ -169,7 +171,7 @@ contract('SetToken', accounts => {
 
     describe('when the component addresses contains a zero address', async () => {
       beforeEach(async () => {
-        subjectComponentAddresses.push(NULL_ADDRESS);
+        subjectComponentAddresses.push(SetProtocolUtils.CONSTANTS.NULL_ADDRESS);
 
         // Length of componentUnits must match componentAddresses
         subjectComponentUnits.push(STANDARD_COMPONENT_UNIT);
@@ -275,15 +277,15 @@ contract('SetToken', accounts => {
     it('emits a Transfer log', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedTransferLog(
-          NULL_ADDRESS,
+          SetProtocolUtils.CONSTANTS.NULL_ADDRESS,
           tokenReceiver,
           quantityToMint,
           setToken.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not authorized', async () => {
@@ -355,15 +357,15 @@ contract('SetToken', accounts => {
     it('emits a Transfer log', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedTransferLog(
           tokenReceiver,
-          NULL_ADDRESS,
+          SetProtocolUtils.CONSTANTS.NULL_ADDRESS,
           subjectQuantityToBurn,
           setToken.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not authorized', async () => {
@@ -436,7 +438,7 @@ contract('SetToken', accounts => {
 
     describe('when the destination is null address', async () => {
       beforeEach(async () => {
-        subjectTokenReceiver = NULL_ADDRESS;
+        subjectTokenReceiver = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -509,7 +511,7 @@ contract('SetToken', accounts => {
 
     describe('when the destination is null address', async () => {
       beforeEach(async () => {
-        subjectTokenReceiver = NULL_ADDRESS;
+        subjectTokenReceiver = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {

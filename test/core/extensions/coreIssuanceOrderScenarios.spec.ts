@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
-import { BigNumber } from 'bignumber.js';
-import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
 import { Address, Bytes } from 'set-protocol-utils';
+import { BigNumber } from 'bignumber.js';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
+import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../../utils/chaiSetup';
 import { BigNumberSetup } from '../../../utils/bigNumberSetup';
@@ -22,15 +23,16 @@ import { DEPLOYED_TOKEN_QUANTITY } from '../../../utils/constants';
 import { SCENARIOS } from './coreIssuanceOrderScenarios';
 import { ExchangeWrapper } from '../../../utils/exchangeWrapper';
 import { generateFillOrderParameters, generateOrdersDataWithTakerOrders } from '../../../utils/orders';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../../utils/logs';
 import { getExpectedFillLog } from '../../../utils/contract_logs/coreIssuanceOrder';
 import { CoreWrapper } from '../../../utils/coreWrapper';
 import { ERC20Wrapper } from '../../../utils/erc20Wrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const Core = artifacts.require('Core');
+const testUtils = new TestUtils(web3);
+const { expect } = chai;
+
 
 contract('CoreIssuanceOrder::Scenarios', accounts => {
   const [
@@ -260,7 +262,7 @@ contract('CoreIssuanceOrder::Scenarios', accounts => {
         it('emits correct LogFill event', async () => {
           const txHash = await subject();
 
-          const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+          const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
           const expectedLogs = getExpectedFillLog(
             setToken.address,
             signerAccount,
@@ -275,7 +277,7 @@ contract('CoreIssuanceOrder::Scenarios', accounts => {
             core.address
           );
 
-          await assertLogEquivalence(formattedLogs, expectedLogs);
+          await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
         });
       });
     });

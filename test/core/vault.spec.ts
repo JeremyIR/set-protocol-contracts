@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import { BigNumber } from 'bignumber.js';
-import { Address } from 'set-protocol-utils';
+import { SetProtocolUtils, Address } from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -12,7 +12,7 @@ import {
   VaultContract
 } from '../../utils/contracts';
 import { assertTokenBalance, expectRevertError } from '../../utils/tokenAssertions';
-import { DEPLOYED_TOKEN_QUANTITY, NULL_ADDRESS, ZERO } from '../../utils/constants';
+import { DEPLOYED_TOKEN_QUANTITY, ZERO } from '../../utils/constants';
 import { CoreWrapper } from '../../utils/coreWrapper';
 import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 
@@ -171,7 +171,7 @@ contract('Vault', accounts => {
   });
 
   describe('#incrementTokenOwner', async () => {
-    const tokenAddress: Address = NULL_ADDRESS;
+    const tokenAddress: Address = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
     const authorized: Address = authorizedAccount;
     let subjectCaller: Address = authorizedAccount;
     let subjectAmountToIncrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
@@ -215,7 +215,7 @@ contract('Vault', accounts => {
 
   describe('#decrementTokenOwner', async () => {
     const amountToIncrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
-    const tokenAddress: Address = NULL_ADDRESS;
+    const tokenAddress: Address = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
     let subjectAmountToDecrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
     let subjectCaller: Address = authorizedAccount;
 
@@ -275,7 +275,7 @@ contract('Vault', accounts => {
 
   describe('#transferBalance', async () => {
     const amountToIncrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
-    const tokenAddress: Address = NULL_ADDRESS;
+    const tokenAddress: Address = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
     let subjectAmountToTransfer: BigNumber = DEPLOYED_TOKEN_QUANTITY;
     let subjectCaller: Address = authorizedAccount;
 
@@ -402,7 +402,7 @@ contract('Vault', accounts => {
 
     describe('when the token address has no balances', async () => {
       beforeEach(async () => {
-        subjectTokenAddress = NULL_ADDRESS;
+        subjectTokenAddress = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should return zero', async () => {

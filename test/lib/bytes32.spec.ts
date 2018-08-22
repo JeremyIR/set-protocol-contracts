@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import { Bytes } from 'set-protocol-utils';
-
-import { stringToBytes32 } from '../../utils/encoding';
+import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -36,7 +35,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is a 32 byte word', async () => {
       beforeEach(async () => {
         subjectString = 'ethereum';
-        subjectData = stringToBytes32(subjectString);
+        subjectData = Utils.stringToBytes(subjectString);
       });
 
       it('returns the same bytestring', async () => {
@@ -66,7 +65,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is a 32 byte padded standard word', async () => {
       beforeEach(async () => {
         subjectString = 'ethereum';
-        subjectData = stringToBytes32(subjectString);
+        subjectData = Utils.stringToBytes(subjectString);
       });
 
       it('returns the correct Ascii word', async () => {
@@ -79,7 +78,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is an empty string', async () => {
       beforeEach(async () => {
         subjectString = '';
-        subjectData = stringToBytes32(subjectString);
+        subjectData = Utils.stringToBytes(subjectString);
       });
 
       it('returns the correct Ascii word', async () => {
@@ -92,7 +91,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is all cap', async () => {
       beforeEach(async () => {
         subjectString = 'ETHEREUM00000';
-        subjectData = stringToBytes32(subjectString);
+        subjectData = Utils.stringToBytes(subjectString);
       });
 
       it('returns the correct Ascii word', async () => {

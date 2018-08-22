@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import { SetProtocolUtils, Address } from 'set-protocol-utils';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import {
   AuthorizableContract,
@@ -15,9 +16,7 @@ import {
 } from './contracts';
 import { BigNumber } from 'bignumber.js';
 import { DEFAULT_GAS } from './constants';
-import { getFormattedLogsFromTxHash } from './logs';
 import { extractNewSetTokenAddressFromLogs } from './contract_logs/core';
-import { stringToBytes32 } from './encoding';
 
 const Authorizable = artifacts.require('Authorizable');
 const Core = artifacts.require('Core');
@@ -30,6 +29,8 @@ const SetToken = artifacts.require('SetToken');
 const SetTokenFactory = artifacts.require('SetTokenFactory');
 const TransferProxy = artifacts.require('TransferProxy');
 const Vault = artifacts.require('Vault');
+
+const testUtils = new TestUtils(web3);
 
 
 export class CoreWrapper {
@@ -162,8 +163,8 @@ export class CoreWrapper {
     symbol: string = 'SET',
     from: Address = this._tokenOwnerAddress
   ): Promise<SetTokenContract> {
-    const encodedName = stringToBytes32(name);
-    const encodedSymbol = stringToBytes32(symbol);
+    const encodedName = SetProtocolUtils.stringToBytes(name);
+    const encodedSymbol = SetProtocolUtils.stringToBytes(symbol);
 
     const truffleSetToken = await SetToken.new(
       factory,
@@ -194,8 +195,8 @@ export class CoreWrapper {
     symbol: string = 'RBSET',
     from: Address = this._tokenOwnerAddress
   ): Promise<RebalancingSetTokenContract> {
-    const encodedName = stringToBytes32(name);
-    const encodedSymbol = stringToBytes32(symbol);
+    const encodedName = SetProtocolUtils.stringToBytes(name);
+    const encodedSymbol = SetProtocolUtils.stringToBytes(symbol);
 
     const truffleRebalancingToken = await RebalancingSetToken.new(
       factory,
@@ -353,8 +354,8 @@ export class CoreWrapper {
     callData: string = '',
     from: Address = this._tokenOwnerAddress,
   ): Promise<SetTokenContract> {
-    const encodedName = stringToBytes32(name);
-    const encodedSymbol = stringToBytes32(symbol);
+    const encodedName = SetProtocolUtils.stringToBytes(name);
+    const encodedSymbol = SetProtocolUtils.stringToBytes(symbol);
 
     const txHash = await core.create.sendTransactionAsync(
       factory,
@@ -367,7 +368,7 @@ export class CoreWrapper {
       { from },
     );
 
-    const logs = await getFormattedLogsFromTxHash(txHash);
+    const logs = await testUtils.getLogsFromTxHash(txHash);
     const setAddress = extractNewSetTokenAddressFromLogs(logs);
 
     return await SetTokenContract.at(

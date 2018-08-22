@@ -4,6 +4,7 @@ import * as chai from 'chai';
 import { Address, Bytes, Log } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
 import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -13,8 +14,6 @@ import {
   SetTokenContract,
   SetTokenFactoryContract,
 } from '../../utils/contracts';
-import { stringToBytes32 } from '../../utils/encoding';
-import { getFormattedLogsFromTxHash } from '../../utils/logs';
 import {
   getRebalancingSetTokenAddressFromLogs,
 } from '../../utils/contract_logs/rebalancingSetTokenFactory';
@@ -26,8 +25,9 @@ import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const Core = artifacts.require('Core');
+const testUtils = new TestUtils(web3);
+const { expect } = chai;
 
 
 contract('RebalancingSetTokenFactory', accounts => {
@@ -99,8 +99,8 @@ contract('RebalancingSetTokenFactory', accounts => {
       subjectNaturalUnit = ZERO;
       const asciiSubjectName = 'My Rebalancing Set';
       const asciiSubjectSymbol = 'REBAL';
-      subjectName = stringToBytes32(asciiSubjectName);
-      subjectSymbol = stringToBytes32(asciiSubjectSymbol);
+      subjectName = Utils.stringToBytes(asciiSubjectName);
+      subjectSymbol = Utils.stringToBytes(asciiSubjectSymbol);
       subjectCallData = Utils.bufferArrayToHex([
         Utils.paddedBufferForPrimitive(managerAddress),
         Utils.paddedBufferForBigNumber(proposalPeriod),
@@ -135,7 +135,7 @@ contract('RebalancingSetTokenFactory', accounts => {
 
       it('should have the correct manager address', async () => {
         txHash = await subject();
-        logs = await getFormattedLogsFromTxHash(txHash);
+        logs = await testUtils.getLogsFromTxHash(txHash);
         rebalancingTokenAddress = getRebalancingSetTokenAddressFromLogs(logs);
 
         const rebalancingToken = await coreWrapper.getRebalancingInstanceFromAddress(
@@ -148,7 +148,7 @@ contract('RebalancingSetTokenFactory', accounts => {
 
       it('should have the correct proposal period', async () => {
         txHash = await subject();
-        logs = await getFormattedLogsFromTxHash(txHash);
+        logs = await testUtils.getLogsFromTxHash(txHash);
         rebalancingTokenAddress = getRebalancingSetTokenAddressFromLogs(logs);
 
         const rebalancingToken = await coreWrapper.getRebalancingInstanceFromAddress(
@@ -161,7 +161,7 @@ contract('RebalancingSetTokenFactory', accounts => {
 
       it('should have the correct rebalance interval', async () => {
         txHash = await subject();
-        logs = await getFormattedLogsFromTxHash(txHash);
+        logs = await testUtils.getLogsFromTxHash(txHash);
         rebalancingTokenAddress = getRebalancingSetTokenAddressFromLogs(logs);
 
         const rebalancingToken = await coreWrapper.getRebalancingInstanceFromAddress(
@@ -209,8 +209,8 @@ contract('RebalancingSetTokenFactory', accounts => {
       subjectNaturalUnit = ZERO;
       const asciiSubjectName = 'My Rebalancing Set';
       const asciiSubjectSymbol = 'REBAL';
-      subjectName = stringToBytes32(asciiSubjectName);
-      subjectSymbol = stringToBytes32(asciiSubjectSymbol);
+      subjectName = Utils.stringToBytes(asciiSubjectName);
+      subjectSymbol = Utils.stringToBytes(asciiSubjectSymbol);
       subjectCallData = Utils.bufferArrayToHex([
         Utils.paddedBufferForPrimitive(managerAddress),
         Utils.paddedBufferForBigNumber(proposalPeriod),

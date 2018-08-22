@@ -2,11 +2,11 @@ import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
+import { Address, Bytes } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
 import { Order as ZeroExOrder } from '@0xproject/types';
 import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
-import { Address, Bytes } from 'set-protocol-utils';
 
 import ChaiSetup from '../../../utils/chaiSetup';
 import { BigNumberSetup } from '../../../utils/bigNumberSetup';
@@ -21,8 +21,7 @@ import {
 } from '../../../utils/contracts';
 import { ether } from '../../../utils/units';
 import { assertTokenBalance, expectRevertError } from '../../../utils/tokenAssertions';
-import { DEFAULT_GAS, DEPLOYED_TOKEN_QUANTITY, NULL_ADDRESS, ZERO } from '../../../utils/constants';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../../utils/logs';
+import { DEFAULT_GAS, DEPLOYED_TOKEN_QUANTITY, ZERO } from '../../../utils/constants';
 import { getExpectedFillLog, getExpectedCancelLog } from '../../../utils/contract_logs/coreIssuanceOrder';
 import { ExchangeWrapper } from '../../../utils/exchangeWrapper';
 import {
@@ -35,10 +34,11 @@ import { ERC20Wrapper } from '../../../utils/erc20Wrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const utils = new Utils(web3);
-const { expect } = chai;
 const Core = artifacts.require('Core');
 const StandardTokenMock = artifacts.require('StandardTokenMock');
+const testUtils = new TestUtils(web3);
+const utils = new Utils(web3);
+const { expect } = chai;
 
 
 contract('CoreIssuanceOrder', accounts => {
@@ -265,7 +265,7 @@ contract('CoreIssuanceOrder', accounts => {
     it('emits correct LogFill event', async () => {
       const txHash = await subject();
 
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
       const expectedLogs = getExpectedFillLog(
         setToken.address,              // setAddress
         signerAccount,                 // makerAddress
@@ -280,7 +280,7 @@ contract('CoreIssuanceOrder', accounts => {
         core.address
       );
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when there are 0x orders as part of the orders data', async () => {
@@ -317,9 +317,9 @@ contract('CoreIssuanceOrder', accounts => {
 
         // Standard 0x order without fees, see zeroExExchangeWrapper.spec.ts for clarity on body
         const zeroExOrder: ZeroExOrder = Utils.generateZeroExOrder(
-          NULL_ADDRESS,                       // senderAddress
+          Utils.CONSTANTS.NULL_ADDRESS,       // senderAddress
           zeroExOrderMakerAccount,            // makerAddress
-          NULL_ADDRESS,                       // takerAddress
+          Utils.CONSTANTS.NULL_ADDRESS,       // takerAddress
           ZERO,                               // makerFee
           ZERO,                               // takerFee
           defaultComponentAmounts[0],         // makerAssetAmount, full amount of first component needed for issuance
@@ -328,7 +328,7 @@ contract('CoreIssuanceOrder', accounts => {
           makerToken.address,                 // takerAssetAddress
           Utils.generateSalt(),               // salt
           TestUtils.ZERO_EX_EXCHANGE_ADDRESS, // exchangeAddress
-          NULL_ADDRESS,                       // feeRecipientAddress
+          Utils.CONSTANTS.NULL_ADDRESS,       // feeRecipientAddress
           Utils.generateTimestamp(10)         // expirationTimeSeconds
         );
 
@@ -343,9 +343,9 @@ contract('CoreIssuanceOrder', accounts => {
         // Second 0x order
         const secondZeroExOrderTakerTokenAmount = ether(10).div(2); // ether(10) = makerTokenAmount
         const secondZeroExOrder: ZeroExOrder = Utils.generateZeroExOrder(
-          NULL_ADDRESS,                       // senderAddress
+          Utils.CONSTANTS.NULL_ADDRESS,       // senderAddress
           zeroExOrderMakerAccount,            // makerAddress
-          NULL_ADDRESS,                       // takerAddress
+          Utils.CONSTANTS.NULL_ADDRESS,       // takerAddress
           ZERO,                               // makerFee
           ZERO,                               // takerFee
           defaultComponentAmounts[1],         // makerAssetAmount, full amount of second component needed for issuance
@@ -354,7 +354,7 @@ contract('CoreIssuanceOrder', accounts => {
           makerToken.address,                 // takerAssetAddress
           Utils.generateSalt(),               // salt
           TestUtils.ZERO_EX_EXCHANGE_ADDRESS, // exchangeAddress
-          NULL_ADDRESS,                       // feeRecipientAddress
+          Utils.CONSTANTS.NULL_ADDRESS,       // feeRecipientAddress
           Utils.generateTimestamp(10)         // expirationTimeSeconds
         );
 
@@ -434,7 +434,7 @@ contract('CoreIssuanceOrder', accounts => {
       it('emits correct LogFill event', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedFillLog(
           setToken.address,              // setAddress
           signerAccount,                 // makerAddress
@@ -449,7 +449,7 @@ contract('CoreIssuanceOrder', accounts => {
           core.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
       });
 
       describe('when the total makerToken required for the 0x orders is more than the signed amount', async () => {
@@ -521,7 +521,7 @@ contract('CoreIssuanceOrder', accounts => {
       it('emits correct LogFill event', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedFillLog(
           setToken.address,
           signerAccount,
@@ -536,7 +536,7 @@ contract('CoreIssuanceOrder', accounts => {
           core.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
       });
     });
 
@@ -556,7 +556,7 @@ contract('CoreIssuanceOrder', accounts => {
       it('does not execute a transfer of the relayer fees for 0 amount', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const transferAddresses: Address[] = [];
         formattedLogs.forEach( event => {
           if (event.event == 'Transfer') {
@@ -571,7 +571,7 @@ contract('CoreIssuanceOrder', accounts => {
     describe('when the relayer address is null', async () => {
       before(async () => {
         ABIDecoder.addABI(StandardTokenMock.abi);
-        relayerAddress = NULL_ADDRESS;
+        relayerAddress = Utils.CONSTANTS.NULL_ADDRESS;
       });
 
       after(async () => {
@@ -582,7 +582,7 @@ contract('CoreIssuanceOrder', accounts => {
       it('does not execute a transfer of the relayer fees for 0 amount', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const transferAddresses: Address[] = [];
         formattedLogs.forEach( event => {
           if (event.event == 'Transfer') {
@@ -642,7 +642,7 @@ contract('CoreIssuanceOrder', accounts => {
 
     describe('when the set was not created through core', async () => {
       before(async () => {
-        setAddress = NULL_ADDRESS;
+        setAddress = Utils.CONSTANTS.NULL_ADDRESS;
       });
 
       after(async () => {
@@ -865,7 +865,7 @@ contract('CoreIssuanceOrder', accounts => {
     it('emits correct LogCancel event', async () => {
       const txHash = await subject();
 
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
       const expectedLogs = getExpectedCancelLog(
         setToken.address,
         signerAccount,
@@ -876,7 +876,7 @@ contract('CoreIssuanceOrder', accounts => {
         core.address
       );
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
    describe('when the quantity to cancel is greater than the open amount', async () => {

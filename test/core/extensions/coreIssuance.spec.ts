@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
 import { BigNumber } from 'bignumber.js';
-import { Address, Log } from 'set-protocol-utils';
+import { Address, Log, SetProtocolUtils, SetProtocolTestUtils } from 'set-protocol-utils';
 
 import ChaiSetup from '../../../utils/chaiSetup';
 import { BigNumberSetup } from '../../../utils/bigNumberSetup';
@@ -15,17 +15,17 @@ import {
   VaultContract
 } from '../../../utils/contracts';
 import { ether } from '../../../utils/units';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../../utils/logs';
 import { IssuanceComponentDeposited } from '../../../utils/contract_logs/core';
 import { assertTokenBalance, expectRevertError } from '../../../utils/tokenAssertions';
-import { DEFAULT_GAS, DEPLOYED_TOKEN_QUANTITY, NULL_ADDRESS, ZERO } from '../../../utils/constants';
+import { DEFAULT_GAS, DEPLOYED_TOKEN_QUANTITY, ZERO } from '../../../utils/constants';
 import { CoreWrapper } from '../../../utils/coreWrapper';
 import { ERC20Wrapper } from '../../../utils/erc20Wrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const Core = artifacts.require('Core');
+const testUtils = new SetProtocolTestUtils(web3);
+const { expect } = chai;
 
 
 contract('CoreIssuance', accounts => {
@@ -111,7 +111,7 @@ contract('CoreIssuance', accounts => {
 
     it('emits a IssuanceComponentDeposited even for each component deposited', async () => {
       const txHash = await subject();
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
 
       const expectedLogs: Log[] = _.map(components, (component, idx) => {
         const requiredQuantityToIssue = subjectQuantityToIssue.div(naturalUnit).mul(componentUnits[idx]);
@@ -123,7 +123,7 @@ contract('CoreIssuance', accounts => {
         );
       });
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await SetProtocolTestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     it('updates the balances of the components in the vault to belong to the set token', async () => {
@@ -162,7 +162,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToIssue = NULL_ADDRESS;
+        subjectSetToIssue = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -410,7 +410,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToRedeem = NULL_ADDRESS;
+        subjectSetToRedeem = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -579,7 +579,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToRedeem = NULL_ADDRESS;
+        subjectSetToRedeem = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -708,7 +708,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToRedeem = NULL_ADDRESS;
+        subjectSetToRedeem = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {

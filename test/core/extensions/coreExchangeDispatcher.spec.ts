@@ -1,21 +1,22 @@
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
-import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
-import { BigNumber } from 'bignumber.js';
 import { Address, Log } from 'set-protocol-utils';
+import { BigNumber } from 'bignumber.js';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
+import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../../utils/chaiSetup';
 import { BigNumberSetup } from '../../../utils/bigNumberSetup';
 import { CoreContract } from '../../../utils/contracts';
 import { expectRevertError } from '../../../utils/tokenAssertions';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../../utils/logs';
 import { ExchangeRegistered } from '../../../utils/contract_logs/core';
 import { CoreWrapper } from '../../../utils/coreWrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const Core = artifacts.require('Core');
+const testUtils = new TestUtils(web3);
+const { expect } = chai;
 
 
 contract('CoreExchangeDispatcher', accounts => {
@@ -69,7 +70,7 @@ contract('CoreExchangeDispatcher', accounts => {
 
     it('emits a IssuanceComponentDeposited even for each component deposited', async () => {
       const txHash = await subject();
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
 
       const expectedLogs: Log[] = [
         ExchangeRegistered(
@@ -79,7 +80,7 @@ contract('CoreExchangeDispatcher', accounts => {
         ),
       ];
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not the owner of the contract', async () => {

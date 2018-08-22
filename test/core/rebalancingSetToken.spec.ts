@@ -1,7 +1,8 @@
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
 import { BigNumber } from 'bignumber.js';
-import { Address } from 'set-protocol-utils';
+import { SetProtocolUtils, Address } from 'set-protocol-utils';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -12,8 +13,7 @@ import {
 } from '../../utils/contracts';
 import { Blockchain } from '../../utils/blockchain';
 import { ether } from '../../utils/units';
-import { DEFAULT_GAS, NULL_ADDRESS, REBALANCING_STATE } from '../../utils/constants';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../utils/logs';
+import { DEFAULT_GAS } from '../../utils/constants';
 import {
   getExpectedTransferLog,
   getExpectedNewManagerAddedLog,
@@ -26,8 +26,10 @@ import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const RebalancingSetToken = artifacts.require('RebalancingSetToken');
+const testUtils = new TestUtils(web3);
+const { expect } = chai;
+
 
 contract('RebalancingSetToken', accounts => {
   const [
@@ -151,7 +153,7 @@ contract('RebalancingSetToken', accounts => {
       rebalancingSetToken = await subject();
 
       const tokenState = await rebalancingSetToken.rebalanceState.callAsync();
-      expect(tokenState).to.be.bignumber.equal(REBALANCING_STATE.DEFAULT);
+      expect(tokenState).to.be.bignumber.equal(SetProtocolUtils.REBALANCING_STATE.DEFAULT);
     });
 
     describe('when the proposal period is less than one day in seconds', async () => {
@@ -315,15 +317,15 @@ contract('RebalancingSetToken', accounts => {
     it('emits a Transfer log denoting a minting', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedTransferLog(
-          NULL_ADDRESS,
+          SetProtocolUtils.CONSTANTS.NULL_ADDRESS,
           subjectIssuer,
           subjectQuantity,
           rebalancingSetToken.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not Core', async () => {
@@ -437,15 +439,15 @@ contract('RebalancingSetToken', accounts => {
     it('emits a Transfer log denoting a minting', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedTransferLog(
           subjectBurner,
-          NULL_ADDRESS,
+          SetProtocolUtils.CONSTANTS.NULL_ADDRESS,
           subjectQuantity,
           rebalancingSetToken.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not Core', async () => {
@@ -543,14 +545,14 @@ contract('RebalancingSetToken', accounts => {
     it('emits the correct NewManagerAdded event', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedNewManagerAddedLog(
           subjectNewManager,
           subjectCaller,
           rebalancingSetToken.address
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not the current manager', async () => {
@@ -620,7 +622,7 @@ contract('RebalancingSetToken', accounts => {
 
     describe('when the destination is null address', async () => {
       beforeEach(async () => {
-        subjectTokenReceiver = NULL_ADDRESS;
+        subjectTokenReceiver = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -700,7 +702,7 @@ contract('RebalancingSetToken', accounts => {
 
     describe('when the destination is null address', async () => {
       beforeEach(async () => {
-        subjectTokenReceiver = NULL_ADDRESS;
+        subjectTokenReceiver = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -813,13 +815,13 @@ contract('RebalancingSetToken', accounts => {
         await subject();
 
         const newRebalanceState = await rebalancingSetToken.rebalanceState.callAsync();
-        expect(newRebalanceState).to.be.bignumber.equal(REBALANCING_STATE.PROPOSAL);
+        expect(newRebalanceState).to.be.bignumber.equal(SetProtocolUtils.REBALANCING_STATE.PROPOSAL);
       });
 
       it('emits the correct RebalanceProposed event', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
 
         const proposalStartTime = await rebalancingSetToken.proposalStartTime.callAsync();
         const proposalEndTime = proposalStartTime.add(proposalPeriod);
@@ -830,7 +832,7 @@ contract('RebalancingSetToken', accounts => {
           rebalancingSetToken.address,
         );
 
-          await assertLogEquivalence(formattedLogs, expectedLogs);
+          await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
       });
 
       describe('but the rebalance interval has not elapsed', async () => {
@@ -978,20 +980,20 @@ contract('RebalancingSetToken', accounts => {
         await subject();
 
         const newRebalanceState = await rebalancingSetToken.rebalanceState.callAsync();
-        expect(newRebalanceState).to.be.bignumber.equal(REBALANCING_STATE.REBALANCE);
+        expect(newRebalanceState).to.be.bignumber.equal(SetProtocolUtils.REBALANCING_STATE.REBALANCE);
       });
 
       it('emits the correct RebalanceProposed event', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedRebalanceStartedLog(
           initialSet,
           newRebalancingToken,
           rebalancingSetToken.address,
         );
 
-        await assertLogEquivalence(formattedLogs, expectedLogs);
+        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
       });
 
       describe('but not enough time has passed before proposal period has elapsed', async () => {
@@ -1131,7 +1133,7 @@ contract('RebalancingSetToken', accounts => {
         await subject();
 
         const newRebalanceState = await rebalancingSetToken.rebalanceState.callAsync();
-        expect(newRebalanceState).to.be.bignumber.equal(REBALANCING_STATE.DEFAULT);
+        expect(newRebalanceState).to.be.bignumber.equal(SetProtocolUtils.REBALANCING_STATE.DEFAULT);
       });
 
       it('updates the currentSet to rebalancing set', async () => {

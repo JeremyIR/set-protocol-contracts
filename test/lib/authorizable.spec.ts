@@ -2,20 +2,21 @@ import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
 import { BigNumber } from 'bignumber.js';
 import { Address } from 'set-protocol-utils';
+import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
 import { Blockchain } from '../../utils/blockchain';
 import { AuthorizableContract } from '../../utils/contracts';
-import { assertLogEquivalence, getFormattedLogsFromTxHash } from '../../utils/logs';
 import { getExpectedAddAuthorizedLog, getExpectedRemoveAuthorizedLog } from '../../utils/contract_logs/authorizable';
 import { expectRevertError } from '../../utils/tokenAssertions';
 import { CoreWrapper } from '../../utils/coreWrapper';
 
 BigNumberSetup.configure();
 ChaiSetup.configure();
-const { expect } = chai;
 const Authorizable = artifacts.require('Authorizable');
+const testUtils = new TestUtils(web3);
+const { expect } = chai;
 
 
 
@@ -80,14 +81,14 @@ contract('Authorizable', accounts => {
     it('emits correct AddressAuthorized log', async () => {
       const txHash = await subject();
 
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
       const expectedLogs = getExpectedAddAuthorizedLog(
         authorizedAccount,
         caller,
         authorizableContract.address,
       );
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not the owner of the contract', async () => {
@@ -176,14 +177,14 @@ contract('Authorizable', accounts => {
     it('emits correct AuthorizedAddressRemoved log', async () => {
       const txHash = await subject();
 
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
       const expectedLogs = getExpectedRemoveAuthorizedLog(
         addressToRemove,
         caller,
         authorizableContract.address,
       );
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not the owner of the contract', async () => {
@@ -273,14 +274,14 @@ contract('Authorizable', accounts => {
     it('emits correct AuthorizedAddressRemoved log', async () => {
       const txHash = await subject();
 
-      const formattedLogs = await getFormattedLogsFromTxHash(txHash);
+      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
       const expectedLogs = getExpectedRemoveAuthorizedLog(
         addressToRemove,
         caller,
         authorizableContract.address,
       );
 
-      await assertLogEquivalence(formattedLogs, expectedLogs);
+      await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not the owner of the contract', async () => {
