@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
+import * as setProtocolUtils from 'set-protocol-utils';
+import { Address } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
-import { SetProtocolUtils, Address } from 'set-protocol-utils';
-import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -18,8 +18,10 @@ import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 BigNumberSetup.configure();
 ChaiSetup.configure();
 const SetToken = artifacts.require('SetToken');
-const testUtils = new TestUtils(web3);
+const { SetProtocolTestUtils: SetTestUtils, SetProtocolUtils: SetUtils } = setProtocolUtils;
+const setTestUtils = new SetTestUtils(web3);
 const { expect } = chai;
+const { NULL_ADDRESS } = SetUtils.CONSTANTS;
 
 
 contract('SetToken', accounts => {
@@ -161,7 +163,7 @@ contract('SetToken', accounts => {
         subjectComponentUnits.push(ZERO);
 
         // Length components must match componentUnits
-        subjectComponentAddresses.push(SetProtocolUtils.CONSTANTS.NULL_ADDRESS);
+        subjectComponentAddresses.push(NULL_ADDRESS);
       });
 
       it('should revert', async () => {
@@ -171,7 +173,7 @@ contract('SetToken', accounts => {
 
     describe('when the component addresses contains a zero address', async () => {
       beforeEach(async () => {
-        subjectComponentAddresses.push(SetProtocolUtils.CONSTANTS.NULL_ADDRESS);
+        subjectComponentAddresses.push(NULL_ADDRESS);
 
         // Length of componentUnits must match componentAddresses
         subjectComponentUnits.push(STANDARD_COMPONENT_UNIT);
@@ -277,15 +279,15 @@ contract('SetToken', accounts => {
     it('emits a Transfer log', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
+        const formattedLogs = await setTestUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedTransferLog(
-          SetProtocolUtils.CONSTANTS.NULL_ADDRESS,
+          NULL_ADDRESS,
           tokenReceiver,
           quantityToMint,
           setToken.address
         );
 
-        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
+        await SetTestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not authorized', async () => {
@@ -357,15 +359,15 @@ contract('SetToken', accounts => {
     it('emits a Transfer log', async () => {
         const txHash = await subject();
 
-        const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
+        const formattedLogs = await setTestUtils.getLogsFromTxHash(txHash);
         const expectedLogs = getExpectedTransferLog(
           tokenReceiver,
-          SetProtocolUtils.CONSTANTS.NULL_ADDRESS,
+          NULL_ADDRESS,
           subjectQuantityToBurn,
           setToken.address
         );
 
-        await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
+        await SetTestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     describe('when the caller is not authorized', async () => {
@@ -438,7 +440,7 @@ contract('SetToken', accounts => {
 
     describe('when the destination is null address', async () => {
       beforeEach(async () => {
-        subjectTokenReceiver = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectTokenReceiver = NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -511,7 +513,7 @@ contract('SetToken', accounts => {
 
     describe('when the destination is null address', async () => {
       beforeEach(async () => {
-        subjectTokenReceiver = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectTokenReceiver = NULL_ADDRESS;
       });
 
       it('should revert', async () => {

@@ -1,6 +1,7 @@
 import * as chai from 'chai';
+import * as setProtocolUtils from 'set-protocol-utils';
+import { Address } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
-import { SetProtocolUtils, Address } from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -19,6 +20,7 @@ import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 BigNumberSetup.configure();
 ChaiSetup.configure();
 const { expect } = chai;
+const { NULL_ADDRESS } = setProtocolUtils.SetProtocolUtils.CONSTANTS;
 
 
 contract('Vault', accounts => {
@@ -171,7 +173,7 @@ contract('Vault', accounts => {
   });
 
   describe('#incrementTokenOwner', async () => {
-    const tokenAddress: Address = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+    const tokenAddress: Address = NULL_ADDRESS;
     const authorized: Address = authorizedAccount;
     let subjectCaller: Address = authorizedAccount;
     let subjectAmountToIncrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
@@ -215,7 +217,7 @@ contract('Vault', accounts => {
 
   describe('#decrementTokenOwner', async () => {
     const amountToIncrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
-    const tokenAddress: Address = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+    const tokenAddress: Address = NULL_ADDRESS;
     let subjectAmountToDecrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
     let subjectCaller: Address = authorizedAccount;
 
@@ -275,7 +277,7 @@ contract('Vault', accounts => {
 
   describe('#transferBalance', async () => {
     const amountToIncrement: BigNumber = DEPLOYED_TOKEN_QUANTITY;
-    const tokenAddress: Address = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+    const tokenAddress: Address = NULL_ADDRESS;
     let subjectAmountToTransfer: BigNumber = DEPLOYED_TOKEN_QUANTITY;
     let subjectCaller: Address = authorizedAccount;
 
@@ -402,7 +404,7 @@ contract('Vault', accounts => {
 
     describe('when the token address has no balances', async () => {
       beforeEach(async () => {
-        subjectTokenAddress = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectTokenAddress = NULL_ADDRESS;
       });
 
       it('should return zero', async () => {

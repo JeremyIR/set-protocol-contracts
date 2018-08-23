@@ -1,7 +1,8 @@
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
+import * as setProtocolUtils from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
-import { SetProtocolUtils, Address, Bytes } from 'set-protocol-utils';
+import { Address, Bytes } from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -15,6 +16,7 @@ BigNumberSetup.configure();
 ChaiSetup.configure();
 const { expect } = chai;
 const SetTokenFactory = artifacts.require('SetTokenFactory');
+const { SetProtocolUtils: SetUtils } = setProtocolUtils;
 
 
 contract('SetTokenFactory', accounts => {
@@ -44,8 +46,8 @@ contract('SetTokenFactory', accounts => {
     let naturalUnit: BigNumber = ZERO;
     const asciiSubjectName: string = 'Set Token';
     const asciiSubjectSymbol: string = 'SET';
-    const subjectName: Bytes = SetProtocolUtils.stringToBytes(asciiSubjectName);
-    const subjectSymbol: Bytes = SetProtocolUtils.stringToBytes(asciiSubjectSymbol);
+    const subjectName: Bytes = SetUtils.stringToBytes(asciiSubjectName);
+    const subjectSymbol: Bytes = SetUtils.stringToBytes(asciiSubjectSymbol);
     const subjectCallData: Bytes = '';
 
     // Setup

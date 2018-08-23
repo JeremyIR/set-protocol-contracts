@@ -1,10 +1,9 @@
 import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
+import * as setProtocolUtils from 'set-protocol-utils';
 import { Address, Bytes } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
-import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
-import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../../utils/chaiSetup';
 import { BigNumberSetup } from '../../../utils/bigNumberSetup';
@@ -30,7 +29,8 @@ import { ERC20Wrapper } from '../../../utils/erc20Wrapper';
 BigNumberSetup.configure();
 ChaiSetup.configure();
 const Core = artifacts.require('Core');
-const testUtils = new TestUtils(web3);
+const { SetProtocolTestUtils: SetTestUtils, SetProtocolUtils: SetUtils } = setProtocolUtils;
+const setTestUtils = new SetTestUtils(web3);
 const { expect } = chai;
 
 
@@ -185,7 +185,7 @@ contract('CoreIssuanceOrder::Scenarios', accounts => {
           );
 
           // Register exchange with core
-          await coreWrapper.registerExchange(core, Utils.EXCHANGES.TAKER_WALLET, takerWalletWrapper.address);
+          await coreWrapper.registerExchange(core, SetUtils.EXCHANGES.TAKER_WALLET, takerWalletWrapper.address);
 
           // Create parameters for exchange orders and generate exchange order data
           const takerAmountsToTransfer: BigNumber[] = [];
@@ -262,7 +262,7 @@ contract('CoreIssuanceOrder::Scenarios', accounts => {
         it('emits correct LogFill event', async () => {
           const txHash = await subject();
 
-          const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
+          const formattedLogs = await setTestUtils.getLogsFromTxHash(txHash);
           const expectedLogs = getExpectedFillLog(
             setToken.address,
             signerAccount,
@@ -277,7 +277,7 @@ contract('CoreIssuanceOrder::Scenarios', accounts => {
             core.address
           );
 
-          await TestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
+          await SetTestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
         });
       });
     });

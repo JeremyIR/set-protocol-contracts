@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import { Bytes } from 'set-protocol-utils';
-import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
+import * as setProtocolUtils from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -10,6 +10,7 @@ import { LibraryMockWrapper } from '../../utils/libraryMockWrapper';
 BigNumberSetup.configure();
 ChaiSetup.configure();
 const { expect } = chai;
+const { SetProtocolUtils: SetUtils } = setProtocolUtils;
 
 
 contract('Bytes32Mock', accounts => {
@@ -35,7 +36,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is a 32 byte word', async () => {
       beforeEach(async () => {
         subjectString = 'ethereum';
-        subjectData = Utils.stringToBytes(subjectString);
+        subjectData = SetUtils.stringToBytes(subjectString);
       });
 
       it('returns the same bytestring', async () => {
@@ -65,7 +66,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is a 32 byte padded standard word', async () => {
       beforeEach(async () => {
         subjectString = 'ethereum';
-        subjectData = Utils.stringToBytes(subjectString);
+        subjectData = SetUtils.stringToBytes(subjectString);
       });
 
       it('returns the correct Ascii word', async () => {
@@ -78,7 +79,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is an empty string', async () => {
       beforeEach(async () => {
         subjectString = '';
-        subjectData = Utils.stringToBytes(subjectString);
+        subjectData = SetUtils.stringToBytes(subjectString);
       });
 
       it('returns the correct Ascii word', async () => {
@@ -91,7 +92,7 @@ contract('Bytes32Mock', accounts => {
     describe('when the string input is all cap', async () => {
       beforeEach(async () => {
         subjectString = 'ETHEREUM00000';
-        subjectData = Utils.stringToBytes(subjectString);
+        subjectData = SetUtils.stringToBytes(subjectString);
       });
 
       it('returns the correct Ascii word', async () => {

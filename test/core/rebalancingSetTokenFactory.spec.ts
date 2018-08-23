@@ -1,10 +1,9 @@
 import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
+import * as setProtocolUtils from 'set-protocol-utils';
 import { Address, Bytes, Log } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
-import { SetProtocolUtils as Utils }  from 'set-protocol-utils';
-import { SetProtocolTestUtils as TestUtils }  from 'set-protocol-utils';
 
 import ChaiSetup from '../../utils/chaiSetup';
 import { BigNumberSetup } from '../../utils/bigNumberSetup';
@@ -26,7 +25,8 @@ import { ERC20Wrapper } from '../../utils/erc20Wrapper';
 BigNumberSetup.configure();
 ChaiSetup.configure();
 const Core = artifacts.require('Core');
-const testUtils = new TestUtils(web3);
+const { SetProtocolTestUtils: SetTestUtils, SetProtocolUtils: SetUtils } = setProtocolUtils;
+const setTestUtils = new SetTestUtils(web3);
 const { expect } = chai;
 
 
@@ -99,12 +99,12 @@ contract('RebalancingSetTokenFactory', accounts => {
       subjectNaturalUnit = ZERO;
       const asciiSubjectName = 'My Rebalancing Set';
       const asciiSubjectSymbol = 'REBAL';
-      subjectName = Utils.stringToBytes(asciiSubjectName);
-      subjectSymbol = Utils.stringToBytes(asciiSubjectSymbol);
-      subjectCallData = Utils.bufferArrayToHex([
-        Utils.paddedBufferForPrimitive(managerAddress),
-        Utils.paddedBufferForBigNumber(proposalPeriod),
-        Utils.paddedBufferForBigNumber(rebalanceInterval),
+      subjectName = SetUtils.stringToBytes(asciiSubjectName);
+      subjectSymbol = SetUtils.stringToBytes(asciiSubjectSymbol);
+      subjectCallData = SetUtils.bufferArrayToHex([
+        SetUtils.paddedBufferForPrimitive(managerAddress),
+        SetUtils.paddedBufferForBigNumber(proposalPeriod),
+        SetUtils.paddedBufferForBigNumber(rebalanceInterval),
       ]);
     });
 
@@ -135,7 +135,7 @@ contract('RebalancingSetTokenFactory', accounts => {
 
       it('should have the correct manager address', async () => {
         txHash = await subject();
-        logs = await testUtils.getLogsFromTxHash(txHash);
+        logs = await setTestUtils.getLogsFromTxHash(txHash);
         rebalancingTokenAddress = getRebalancingSetTokenAddressFromLogs(logs);
 
         const rebalancingToken = await coreWrapper.getRebalancingInstanceFromAddress(
@@ -148,7 +148,7 @@ contract('RebalancingSetTokenFactory', accounts => {
 
       it('should have the correct proposal period', async () => {
         txHash = await subject();
-        logs = await testUtils.getLogsFromTxHash(txHash);
+        logs = await setTestUtils.getLogsFromTxHash(txHash);
         rebalancingTokenAddress = getRebalancingSetTokenAddressFromLogs(logs);
 
         const rebalancingToken = await coreWrapper.getRebalancingInstanceFromAddress(
@@ -161,7 +161,7 @@ contract('RebalancingSetTokenFactory', accounts => {
 
       it('should have the correct rebalance interval', async () => {
         txHash = await subject();
-        logs = await testUtils.getLogsFromTxHash(txHash);
+        logs = await setTestUtils.getLogsFromTxHash(txHash);
         rebalancingTokenAddress = getRebalancingSetTokenAddressFromLogs(logs);
 
         const rebalancingToken = await coreWrapper.getRebalancingInstanceFromAddress(
@@ -209,12 +209,12 @@ contract('RebalancingSetTokenFactory', accounts => {
       subjectNaturalUnit = ZERO;
       const asciiSubjectName = 'My Rebalancing Set';
       const asciiSubjectSymbol = 'REBAL';
-      subjectName = Utils.stringToBytes(asciiSubjectName);
-      subjectSymbol = Utils.stringToBytes(asciiSubjectSymbol);
-      subjectCallData = Utils.bufferArrayToHex([
-        Utils.paddedBufferForPrimitive(managerAddress),
-        Utils.paddedBufferForBigNumber(proposalPeriod),
-        Utils.paddedBufferForBigNumber(rebalanceInterval),
+      subjectName = SetUtils.stringToBytes(asciiSubjectName);
+      subjectSymbol = SetUtils.stringToBytes(asciiSubjectSymbol);
+      subjectCallData = SetUtils.bufferArrayToHex([
+        SetUtils.paddedBufferForPrimitive(managerAddress),
+        SetUtils.paddedBufferForBigNumber(proposalPeriod),
+        SetUtils.paddedBufferForBigNumber(rebalanceInterval),
       ]);
     });
 

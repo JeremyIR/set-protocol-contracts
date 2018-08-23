@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import * as ABIDecoder from 'abi-decoder';
 import * as chai from 'chai';
+import * as setProtocolUtils from 'set-protocol-utils';
+import { Address, Log } from 'set-protocol-utils';
 import { BigNumber } from 'bignumber.js';
-import { Address, Log, SetProtocolUtils, SetProtocolTestUtils } from 'set-protocol-utils';
 
 import ChaiSetup from '../../../utils/chaiSetup';
 import { BigNumberSetup } from '../../../utils/bigNumberSetup';
@@ -24,9 +25,10 @@ import { ERC20Wrapper } from '../../../utils/erc20Wrapper';
 BigNumberSetup.configure();
 ChaiSetup.configure();
 const Core = artifacts.require('Core');
-const testUtils = new SetProtocolTestUtils(web3);
+const { SetProtocolTestUtils: SetTestUtils, SetProtocolUtils: SetUtils } = setProtocolUtils;
+const setTestUtils = new SetTestUtils(web3);
 const { expect } = chai;
-const { NULL_ADDRESS } =  SetProtocolUtils.CONSTANTS;
+const { NULL_ADDRESS } =  SetUtils.CONSTANTS;
 
 
 contract('CoreIssuance', accounts => {
@@ -112,7 +114,7 @@ contract('CoreIssuance', accounts => {
 
     it('emits a IssuanceComponentDeposited even for each component deposited', async () => {
       const txHash = await subject();
-      const formattedLogs = await testUtils.getLogsFromTxHash(txHash);
+      const formattedLogs = await setTestUtils.getLogsFromTxHash(txHash);
 
       const expectedLogs: Log[] = _.map(components, (component, idx) => {
         const requiredQuantityToIssue = subjectQuantityToIssue.div(naturalUnit).mul(componentUnits[idx]);
@@ -124,7 +126,7 @@ contract('CoreIssuance', accounts => {
         );
       });
 
-      await SetProtocolTestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
+      await SetTestUtils.assertLogEquivalence(formattedLogs, expectedLogs);
     });
 
     it('updates the balances of the components in the vault to belong to the set token', async () => {
