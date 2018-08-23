@@ -39,6 +39,7 @@ const StandardTokenMock = artifacts.require('StandardTokenMock');
 const testUtils = new TestUtils(web3);
 const utils = new Utils(web3);
 const { expect } = chai;
+const { NULL_ADDRESS } =  Utils.CONSTANTS;
 
 
 contract('CoreIssuanceOrder', accounts => {
@@ -317,9 +318,9 @@ contract('CoreIssuanceOrder', accounts => {
 
         // Standard 0x order without fees, see zeroExExchangeWrapper.spec.ts for clarity on body
         const zeroExOrder: ZeroExOrder = Utils.generateZeroExOrder(
-          Utils.CONSTANTS.NULL_ADDRESS,       // senderAddress
+          NULL_ADDRESS,       // senderAddress
           zeroExOrderMakerAccount,            // makerAddress
-          Utils.CONSTANTS.NULL_ADDRESS,       // takerAddress
+          NULL_ADDRESS,       // takerAddress
           ZERO,                               // makerFee
           ZERO,                               // takerFee
           defaultComponentAmounts[0],         // makerAssetAmount, full amount of first component needed for issuance
@@ -328,7 +329,7 @@ contract('CoreIssuanceOrder', accounts => {
           makerToken.address,                 // takerAssetAddress
           Utils.generateSalt(),               // salt
           TestUtils.ZERO_EX_EXCHANGE_ADDRESS, // exchangeAddress
-          Utils.CONSTANTS.NULL_ADDRESS,       // feeRecipientAddress
+          NULL_ADDRESS,       // feeRecipientAddress
           Utils.generateTimestamp(10)         // expirationTimeSeconds
         );
 
@@ -343,9 +344,9 @@ contract('CoreIssuanceOrder', accounts => {
         // Second 0x order
         const secondZeroExOrderTakerTokenAmount = ether(10).div(2); // ether(10) = makerTokenAmount
         const secondZeroExOrder: ZeroExOrder = Utils.generateZeroExOrder(
-          Utils.CONSTANTS.NULL_ADDRESS,       // senderAddress
+          NULL_ADDRESS,       // senderAddress
           zeroExOrderMakerAccount,            // makerAddress
-          Utils.CONSTANTS.NULL_ADDRESS,       // takerAddress
+          NULL_ADDRESS,       // takerAddress
           ZERO,                               // makerFee
           ZERO,                               // takerFee
           defaultComponentAmounts[1],         // makerAssetAmount, full amount of second component needed for issuance
@@ -354,7 +355,7 @@ contract('CoreIssuanceOrder', accounts => {
           makerToken.address,                 // takerAssetAddress
           Utils.generateSalt(),               // salt
           TestUtils.ZERO_EX_EXCHANGE_ADDRESS, // exchangeAddress
-          Utils.CONSTANTS.NULL_ADDRESS,       // feeRecipientAddress
+          NULL_ADDRESS,       // feeRecipientAddress
           Utils.generateTimestamp(10)         // expirationTimeSeconds
         );
 
@@ -571,7 +572,7 @@ contract('CoreIssuanceOrder', accounts => {
     describe('when the relayer address is null', async () => {
       before(async () => {
         ABIDecoder.addABI(StandardTokenMock.abi);
-        relayerAddress = Utils.CONSTANTS.NULL_ADDRESS;
+        relayerAddress = NULL_ADDRESS;
       });
 
       after(async () => {
@@ -642,7 +643,7 @@ contract('CoreIssuanceOrder', accounts => {
 
     describe('when the set was not created through core', async () => {
       before(async () => {
-        setAddress = Utils.CONSTANTS.NULL_ADDRESS;
+        setAddress = NULL_ADDRESS;
       });
 
       after(async () => {

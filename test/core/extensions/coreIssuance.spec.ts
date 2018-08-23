@@ -26,6 +26,7 @@ ChaiSetup.configure();
 const Core = artifacts.require('Core');
 const testUtils = new SetProtocolTestUtils(web3);
 const { expect } = chai;
+const { NULL_ADDRESS } =  SetProtocolUtils.CONSTANTS;
 
 
 contract('CoreIssuance', accounts => {
@@ -162,7 +163,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToIssue = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectSetToIssue = NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -410,7 +411,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToRedeem = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectSetToRedeem = NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -579,7 +580,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToRedeem = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectSetToRedeem = NULL_ADDRESS;
       });
 
       it('should revert', async () => {
@@ -708,7 +709,7 @@ contract('CoreIssuance', accounts => {
 
     describe('when the set was not created through core', async () => {
       beforeEach(async () => {
-        subjectSetToRedeem = SetProtocolUtils.CONSTANTS.NULL_ADDRESS;
+        subjectSetToRedeem = NULL_ADDRESS;
       });
 
       it('should revert', async () => {
